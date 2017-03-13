@@ -1,4 +1,5 @@
 #%%
+from __future__ import division
 import time
 import math
 import sys
@@ -72,7 +73,7 @@ optimizer = optimizers.RMSprop(lr=args.learning_rate, alpha=args.decay_rate, eps
 optimizer.setup(model)
 
 whole_len    = train_data.shape[0]
-jump         = whole_len / batchsize
+jump         = whole_len // batchsize
 epoch        = 0
 start_at     = time.time()
 cur_at       = start_at
