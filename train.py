@@ -3,7 +3,7 @@ import time
 import math
 import sys
 import argparse
-import cPickle as pickle
+import pickle as pickle
 import copy
 import os
 import codecs
@@ -16,7 +16,7 @@ from CharRNN import CharRNN, make_initial_state
 # input data
 def load_data(args):
     vocab = {}
-    print ('%s/input.txt'% args.data_dir)
+    print(('%s/input.txt'% args.data_dir))
     words = codecs.open('%s/input.txt' % args.data_dir, 'rb', 'utf-8').read()
     words = list(words)
     dataset = np.ndarray((len(words),), dtype=np.int32)
@@ -24,8 +24,8 @@ def load_data(args):
         if word not in vocab:
             vocab[word] = len(vocab)
         dataset[i] = vocab[word]
-    print 'corpus length:', len(words)
-    print 'vocab size:', len(vocab)
+    print('corpus length:', len(words))
+    print('vocab size:', len(vocab))
     return dataset, words, vocab
 
 # arguments
@@ -79,17 +79,17 @@ cur_at       = start_at
 state        = make_initial_state(n_units, batchsize=batchsize)
 if args.gpu >= 0:
     accum_loss   = Variable(cuda.zeros(()))
-    for key, value in state.items():
+    for key, value in list(state.items()):
         value.data = cuda.to_gpu(value.data)
 else:
     accum_loss   = Variable(np.zeros((), dtype=np.float32))
 
-print 'going to train {} iterations'.format(jump * n_epochs)
-for i in xrange(jump * n_epochs):
+print('going to train {} iterations'.format(jump * n_epochs))
+for i in range(jump * n_epochs):
     x_batch = np.array([train_data[(jump * j + i) % whole_len]
-                        for j in xrange(batchsize)])
+                        for j in range(batchsize)])
     y_batch = np.array([train_data[(jump * j + i + 1) % whole_len]
-                        for j in xrange(batchsize)])
+                        for j in range(batchsize)])
 
     if args.gpu >=0:
         x_batch = cuda.to_gpu(x_batch)
@@ -100,7 +100,7 @@ for i in xrange(jump * n_epochs):
 
     if (i + 1) % bprop_len == 0:  # Run truncated BPTT
         now = time.time()
-        print '{}/{}, train_loss = {}, time = {:.2f}'.format((i+1)/bprop_len, jump, accum_loss.data / bprop_len, now-cur_at)
+        print('{}/{}, train_loss = {}, time = {:.2f}'.format((i+1)/bprop_len, jump, accum_loss.data / bprop_len, now-cur_at))
         cur_at = now
 
         optimizer.zero_grads()
@@ -124,6 +124,6 @@ for i in xrange(jump * n_epochs):
 
         if epoch >= args.learning_rate_decay_after:
             optimizer.lr *= args.learning_rate_decay
-            print 'decayed learning rate by a factor {} to {}'.format(args.learning_rate_decay, optimizer.lr)
+            print('decayed learning rate by a factor {} to {}'.format(args.learning_rate_decay, optimizer.lr))
 
     sys.stdout.flush()
